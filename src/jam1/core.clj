@@ -35,7 +35,15 @@
                                (+ (note @root) 24)
                                (cosr 0 5 3 1/2)
                                7/3))
-                                 scl)))
+                         scl))
+        (when (< (rand) 0.4)
+          (sampled-piano  (quantize
+                           (int (+ 7 (cosr
+                                      0
+                                      (+ (note @root) 24)
+                                      (cosr 0 5 3 1/2)
+                                      7/3)))
+                           scl))))
     (apply-by (nome (inc beat)) right-hand nome [])))
 
 (defn left-hand
@@ -51,12 +59,11 @@
       (at (/ (nome beat) 2)
           (sampled-piano (note @root)))
       (at (nome beat)
-(scale-field :c :aeolian)          (sampled-piano (note n)))
+          (sampled-piano (note n)))
       (apply-by (nome (inc beat)) left-hand nome notes []))))
 
 (do
   (left-hand metro (cycle lpitches))
-  (right-hand metro)
-  )
+  (right-hand metro))
 
 (stop)
