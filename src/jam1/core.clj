@@ -1,7 +1,8 @@
 (ns jam1.core
   (:use [overtone.core]
         [overtone.inst.sampled-piano]
-        [overtone.inst.drum]))
+        [overtone.inst.drum]
+        [overtone.inst.synth]))
 
 (defn quantize
   [midi field]
@@ -24,46 +25,43 @@
 
 (def root (atom :E3))
 
-
 (defn right-hand
-  [nome]
-  (let [beat (nome)]
-    (at (nome beat)
+  [beat dur]
+  (at (metro beat)
+      (sampled-piano  (quantize
+                       (int (cosr
+                             0
+                             (+ (note @root) 24)
+                             (cosr 0 5 3 1/2)
+                             7/3))
+                       scl))
+      (when (< (rand) 0.4)
         (sampled-piano  (quantize
-                         (int (cosr
-                               0
-                               (+ (note @root) 24)
-                               (cosr 0 5 3 1/2)
-                               7/3))
-                         scl))
-        (when (< (rand) 0.4)
-          (sampled-piano  (quantize
-                           (int (+ 7 (cosr
-                                      0
-                                      (+ (note @root) 24)
-                                      (cosr 0 5 3 1/2)
-                                      7/3)))
-                           scl))))
-    (apply-by (nome (inc beat)) right-hand nome [])))
+                         (int (+ 7 (cosr
+                                    0
+                                    (+ (note @root) 24)
+                                    (cosr 0 5 3 1/2)
+                                    7/3)))
+                         scl))))
+  (apply-by (metro (+ beat (* 0.5 dur))) right-hand (+ beat dur) dur []))
 
 (defn left-hand
-  [nome notes]
+  [beat notes dur]
   (let [n      (first notes)
-        notes  (next notes)
-        beat (nome)]
+        notes  (next notes)]
     (when n
      (when (= 0 (mod beat 8))
        (reset! root (rand-nth
                   (remove
                    #(= @root %) '(:E3 :D3 :C3)))))
-      (at (/ (nome beat) 2)
+      (at (/ (metro beat) 2)
           (sampled-piano (note @root)))
-      (at (nome beat)
+      (at (metro beat)
           (sampled-piano (note n)))
-      (apply-by (nome (inc beat)) left-hand nome notes []))))
+      (apply-by (metro (+ beat (* 0.5 dur))) left-hand (+ beat dur) notes 1 []))))
 
 (do
-  (left-hand metro (cycle lpitches))
-  (right-hand metro))
+  (left-hand (metro) (cycle lpitches) 1)
+  (right-hand (metro) 1/4))
 
 (stop)
