@@ -21,7 +21,7 @@
 
 (def lpitches [:G3 :G3 :A3 :B3])
 
-(def metro (metronome 120))
+(def metro (metronome 100))
 
 (def root (atom :E3))
 
@@ -54,9 +54,9 @@
        (reset! root (rand-nth
                   (remove
                    #(= @root %) '(:E3 :D3 :C3)))))
-      (at (/ (metro beat) 2)
+     (at (metro (+ 1/2 beat))
           (sampled-piano (note @root)))
-      (at (metro beat)
+     (at (metro beat)
           (sampled-piano (note n)))
       (apply-by (metro (+ beat (* 0.5 dur))) left-hand (+ beat dur) notes 1 []))))
 
