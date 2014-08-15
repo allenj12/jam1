@@ -69,11 +69,11 @@
 
 (defn kick-drum
   [beat dur]
-  (at (metro (- 1/4 beat))
+  (at (metro (- beat 1/4))
       (kick4 :freq 50 :amp 1.5 :attack 0.04 :decay dur))
   (at (metro beat)
       (kick4 :amp 1.2 :attack 0.04 :decay dur))
-  (apply-by (metro (+ beat (* 0.3 dur))) kick-drum (+ beat dur) dur []))
+  (apply-by (metro (+ beat (* 0.5 dur))) kick-drum (+ beat dur) dur []))
 
 
 (do
