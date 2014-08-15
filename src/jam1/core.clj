@@ -43,6 +43,7 @@
                                     (cosr 0 5 3 1/2)
                                     7/3)))
                          scl))))
+
   (apply-by (metro (+ beat (* 0.5 dur))) right-hand (+ beat dur) dur []))
 
 (defn left-hand
@@ -50,7 +51,7 @@
   (let [n      (first notes)
         notes  (next notes)]
     (when n
-     (when (= 0 (mod beat 8))
+     (when (= 0 (mod (metro) 8))
        (reset! root (rand-nth
                   (remove
                    #(= @root %) '(:E3 :D3 :C3)))))
@@ -63,12 +64,22 @@
 (defn hats
   [beat dur]
   (at (metro beat)
-      (closed-hat2 :amp 0.5 :decay (rand-nth '(0.3 0.1))))
+      (closed-hat2 :amp 0.2 :decay (rand-nth '(0.3 0.1))))
   (apply-by (metro (+ beat (* 0.5 dur))) hats (+ beat dur) dur []))
+
+(defn kick-drum
+  [beat dur]
+  (at (metro (- 1/4 beat))
+      (kick4 :freq 50 :amp 1.5 :attack 0.04 :decay dur))
+  (at (metro beat)
+      (kick4 :amp 1.2 :attack 0.04 :decay dur))
+  (apply-by (metro (+ beat (* 0.3 dur))) kick-drum (+ beat dur) dur []))
+
 
 (do
   (left-hand (metro) (cycle lpitches) 1)
   (right-hand (metro) 1/4)
-  (hats (metro) 1/4))
+  (hats (metro) 1/4)
+  (kick-drum (metro) 1))
 
 (stop)
