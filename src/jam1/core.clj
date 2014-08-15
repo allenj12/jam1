@@ -54,14 +54,21 @@
        (reset! root (rand-nth
                   (remove
                    #(= @root %) '(:E3 :D3 :C3)))))
+     (at (metro beat)
+         (sampled-piano (note n)))
      (at (metro (+ 1/2 beat))
           (sampled-piano (note @root)))
-     (at (metro beat)
-          (sampled-piano (note n)))
-      (apply-by (metro (+ beat (* 0.5 dur))) left-hand (+ beat dur) notes 1 []))))
+     (apply-by (metro (+ beat (* 0.5 dur))) left-hand (+ beat dur) notes dur []))))
+
+(defn hats
+  [beat dur]
+  (at (metro beat)
+      (closed-hat2 :amp 0.5 :decay (rand-nth '(0.3 0.1))))
+  (apply-by (metro (+ beat (* 0.5 dur))) hats (+ beat dur) dur []))
 
 (do
   (left-hand (metro) (cycle lpitches) 1)
-  (right-hand (metro) 1/4))
+  (right-hand (metro) 1/4)
+  (hats (metro) 1/4))
 
 (stop)
